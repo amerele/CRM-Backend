@@ -10,7 +10,7 @@ import { JwtStrategy } from './authenticated.guard';
 @Module({
   imports: [UserModule, PassportModule.register({ session: true }), JwtModule.register({
     secret: process.env.JWT_KEY,
-    signOptions: { expiresIn: '1h' },
+    signOptions: { expiresIn: '24h' },
   })],
   providers: [AuthService, SessionSerializer, {
     provide: APP_GUARD,

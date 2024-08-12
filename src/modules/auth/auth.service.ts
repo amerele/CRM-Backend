@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { Users } from '../user/user.entity';
-import { UnauthorizedError } from 'src/shared/responses/error.types';
+import { BadRequestError, UnauthorizedError } from 'src/shared/responses/error.types';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +12,8 @@ export class AuthService {
   ) {}
 
   async validateUser({ email, password }): Promise<any> {
+    if(!email || !password) 
+      throw new BadRequestError('Please enter e-mail and password');
     const user: Users = await this.userService.getUserByEmail(email);
 
     if (user && user.password === password) {
