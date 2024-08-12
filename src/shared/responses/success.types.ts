@@ -1,21 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpStatus } from '@nestjs/common';
-import { JsonResponse } from './json-response.contract';
-import messages from './messages';
+import { IJsonResponse } from './json-response.contract';
 
-export const Ok = (inner: any, message?: string): JsonResponse<any, any> => ({
-  statusCode: HttpStatus.OK,
-  message: message || messages.OK,
-  inner,
-  error: null,
-});
+export class SuccessResponse<T> implements IJsonResponse<T> {
+  statusCode: number;
+  message: string;
+  data: T;
 
-export const Created = (
-  inner: any,
-  message?: string,
-): JsonResponse<any, any> => ({
-  statusCode: HttpStatus.CREATED,
-  message: message || messages.CREATED,
-  inner,
-  error: null,
-});
+  constructor(statusCode: number, data: T, message?: string) {
+    this.statusCode = statusCode;
+    this.message = message;
+    this.data = data;
+  }
+}
+
+export class Ok<T> extends SuccessResponse<T> {
+    constructor(data: T, message?: string) {
+      super(HttpStatus.OK, data, message || "Ok");
+    }
+  }
+  
+  export class Created<T> extends SuccessResponse<T> {
+    constructor(data: T, message?: string) {
+      super(HttpStatus.CREATED, data, message || "Created");
+    }
+  }

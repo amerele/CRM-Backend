@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { Users } from '../user/user.entity';
-import { Error } from 'src/shared/responses/error.types';
+import { UnauthorizedError } from 'src/shared/responses/error.types';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +17,7 @@ export class AuthService {
     if (user && user.password === password) {
       return user;
     }
-    throw Error(401, 'Wrong password');
+    throw new UnauthorizedError('Wrong password');
   }
 
   async login(req: any) {
