@@ -23,12 +23,12 @@ export class AuthService {
   }
 
   async login(req: any) {
-    const { username, password, _id } = await this.validateUser(req);
-    const payload = { username, password };
+    const { name, id } = await this.validateUser(req);
+    const payload = { name, id };
 
     return {
-      username,
-      id: _id,
+      name,
+      id: id,
       access_token: this.jwtService.sign(payload, {
         secret: process.env.JWT_KEY,
       }),
