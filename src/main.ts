@@ -2,6 +2,7 @@ import * as dotenv from 'dotenv';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './modules/app/app.module';
+import { CustomExceptionFilter } from './shared/filters/exception.filters';
 
 dotenv.config();
 async function bootstrap() {
@@ -16,6 +17,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
   app.enableCors();
+  app.useGlobalFilters(new CustomExceptionFilter());
   await app.listen(process.env.NODE_PORT || 3333);
   console.log(
     `Application is running on port ${process.env.NODE_PORT || 3333}`,

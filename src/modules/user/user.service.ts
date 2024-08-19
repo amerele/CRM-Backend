@@ -5,6 +5,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from 'src/shared/responses/error.types';
+import { missingFields } from 'src/shared/filters/missingFields.filter';
 
 @Injectable()
 export class UserService {
@@ -20,21 +21,33 @@ export class UserService {
     return user;
   }
   async isEmailExistant(email: string) {
-    const user = await this.prismaService.user.findUnique({
+    const user = await this.prismaService?.user?.findFirst({
       where: { email: email.toLowerCase() },
     });
-    if (user && user !== null) return true;
-
-    return false;
+    return !!user;
   }
-  async create(createUserDto: UserBodyDTO) {
+  async create({ email, companyName, companyId, password, name }: UserBodyDTO) {
+    
+    //Verifica preenchimento dos campos
+    const fields = missingFields({
+      email,
+      companyName,
+      companyId,
+      password,
+      name,
+    });
+    if (fields)
+      throw new UnauthorizedError(`Please enter the missing fields: ${fields}`);
+
     //Verifica se um usuário com aquele e-mail já existe
-    const isEmailAlreadyExistant = await this.isEmailExistant(createUserDto.email);
+    const isEmailAlreadyExistant = await this.isEmailExistant(email);
     if (isEmailAlreadyExistant)
       throw new UnauthorizedError('This e-mail is already registered');
 
-    createUserDto.email = createUserDto.email.toLowerCase()
-    const user = await this.prismaService.user.create({ data: createUserDto });
+    email = email.toLowerCase();
+    const user = await this.prismaService.user.create({
+      data: { email, companyName, companyId, password, name },
+    });
 
     delete user.password;
     return { user };

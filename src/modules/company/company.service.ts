@@ -6,16 +6,25 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from 'src/shared/responses/error.types';
+import { missingFields } from 'src/shared/filters/missingFields.filter';
 
 @Injectable()
 export class CompanyService {
   private logger = new Logger(CompanyService.name);
   constructor(private prismaService: PrismaService) {}
 
-  async create(body: CompanyBodyDTO) {
-    //TODO - Precisa verificar se a compania já existe mas ainda nao temos unique field
+  async create({ companyName, location }: CompanyBodyDTO) {
+    //Verifica preenchimento dos campos
+    const fields = missingFields({ companyName, location });
+    if (fields) {
+      console.log(fields);
+      throw new UnauthorizedError(`Please enter the missing fields: ${fields}`);
+    }
 
-    const company = await this.prismaService.company.create({ data: body });
+    //TODO - adicionar verificação de unique company, cnpj se pa
+    const company = await this.prismaService.company.create({
+      data: { companyName, location },
+    });
     return { company };
   }
 
@@ -26,7 +35,9 @@ export class CompanyService {
 
   async findOne(id: number) {
     //Verifica se o usuário existe, e o retorna caso sim.
-    const company = await this.prismaService.company.findUnique({ where: { id } });
+    const company = await this.prismaService.company.findUnique({
+      where: { id },
+    });
     if (!company) throw new NotFoundError('User not Found');
 
     return { company };
