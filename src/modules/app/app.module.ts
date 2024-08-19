@@ -8,13 +8,16 @@ import { UserModule } from '../user/user.module';
 import { AuthModule } from '../auth/auth.module';
 import { AppController } from './app.controller';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CompanyService } from '../company/company.service';
+import { CompanyModule } from '../company/company.module';
 
 @Module({
-  imports: [PrismaModule, UserModule, AuthModule],
+  imports: [PrismaModule, UserModule, AuthModule, CompanyModule],
   controllers: [AppController],
   providers: [
     PrismaService,
     UserService,
+    CompanyService,
     {
       provide: APP_FILTER,
       useClass: CustomExceptionFilter,
