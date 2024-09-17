@@ -38,7 +38,7 @@ export class CompanyService {
     const company = await this.prismaService.company.findUnique({
       where: { id },
     });
-    if (!company) throw new NotFoundError('User not Found');
+    if (!company) throw new NotFoundError('Company not Found');
 
     return { company };
   }
